@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gestor de Reconocimientos Personalizados - CertiRiec</title>
+    <title>Gestor de Constancias Personalizados - CertiRiec</title>
     <!-- Tailwind CSS para un diseño moderno y responsivo -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Iconos Lucide para una interfaz elegante -->
@@ -29,7 +29,7 @@
                     </div>
                     <div>
                         <span class="text-xl font-bold tracking-tight text-slate-900">CertiRiec</span>
-                        <span class="text-xs block text-slate-500 -mt-1">Sistema de Certificación</span>
+                        <span class="text-xs block text-slate-500 -mt-1">Sistema de Constancias</span>
                     </div>
                 </div>
 
@@ -37,7 +37,7 @@
                 <div class="flex items-center space-x-4">
                     <button onclick="switchView('user-portal')" id="nav-user-btn" class="flex items-center space-x-2 px-4 py-2 rounded-lg text-sm font-medium transition-colors bg-amber-50 text-amber-700">
                         <i data-lucide="search" class="w-4 h-4"></i>
-                        <span>Buscar Reconocimiento</span>
+                        <span>Buscar Constancia</span>
                     </button>
                     <button onclick="openAdminAuthModal()" id="nav-admin-btn" class="flex items-center space-x-2 px-4 py-2 rounded-lg text-sm font-medium transition-colors text-slate-600 hover:text-slate-900 hover:bg-slate-100">
                         <i data-lucide="settings" class="w-4 h-4"></i>
@@ -54,12 +54,12 @@
         <!-- VISTA 1: PORTAL DE USUARIOS (Búsqueda y Descarga) -->
         <section id="view-user-portal" class="space-y-8">
             <div class="max-w-xl mx-auto text-center space-y-4">
-                <span class="px-3 py-1 bg-amber-100 text-amber-800 rounded-full text-xs font-semibold uppercase tracking-wider">Obtén tu reconocimiento</span>
+                <span class="px-3 py-1 bg-amber-100 text-amber-800 rounded-full text-xs font-semibold uppercase tracking-wider">Obtén tu constancia</span>
                 <h1 class="text-4xl font-extrabold tracking-tight text-slate-900 sm:text-5xl">
-                    Descarga tu Reconocimiento Oficial
+                    Descarga tu Constancia Oficial
                 </h1>
                 <p class="text-lg text-slate-600">
-                    Ingresa el identificador único o ID que te fue proporcionado por la institución para validar y descargar tu diploma personalizado.
+                    Ingresa el identificador único o ID que te fue proporcionado por la institución para validar y descargar tu constancia personalizada.
                 </p>
             </div>
 
@@ -106,7 +106,7 @@
                 <div class="bg-white border border-slate-200 rounded-2xl p-4 sm:p-8 shadow-xl relative overflow-hidden flex flex-col items-center">
                     <h4 class="text-sm font-semibold uppercase tracking-wider text-slate-400 mb-4">Vista Previa del Documento Oficial</h4>
                     <div class="w-full max-w-3xl border border-slate-100 shadow-md rounded-lg overflow-hidden bg-slate-100">
-                        <!-- Canvas que renderiza el reconocimiento en vivo -->
+                        <!-- Canvas que renderiza la constancia en vivo -->
                         <canvas id="certificate-canvas" class="w-full h-auto block"></canvas>
                     </div>
                 </div>
