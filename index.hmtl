@@ -1,0 +1,1229 @@
+<!DOCTYPE html>
+<html lang="es" class="h-full bg-slate-50">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestor de Reconocimientos Personalizados - CertiRiec</title>
+    <!-- Tailwind CSS para un diseño moderno y responsivo -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Iconos Lucide para una interfaz elegante -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700;800&family=Great+Vibes&family=Inter:wght@300;400;500;600;700&display=swap');
+        
+        .font-serif-elegant { font-family: 'Cinzel', Georgia, serif; }
+        .font-cursive { font-family: 'Great Vibes', cursive; }
+        .font-sans-inter { font-family: 'Inter', sans-serif; }
+    </style>
+</head>
+<body class="font-sans-inter h-full flex flex-col text-slate-800">
+
+    <!-- Encabezado de Navegación Principal -->
+    <header class="bg-white border-b border-slate-200 sticky top-0 z-40">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16 items-center">
+                <!-- Logotipo / Título -->
+                <div class="flex items-center space-x-3 cursor-pointer" onclick="switchView('user-portal')">
+                    <div class="bg-gradient-to-tr from-amber-500 to-yellow-600 p-2 rounded-xl text-white shadow-md shadow-amber-500/20">
+                        <i data-lucide="award" class="w-6 h-6"></i>
+                    </div>
+                    <div>
+                        <span class="text-xl font-bold tracking-tight text-slate-900">CertiRiec</span>
+                        <span class="text-xs block text-slate-500 -mt-1">Sistema de Certificación</span>
+                    </div>
+                </div>
+
+                <!-- Botones de Navegación de Vistas -->
+                <div class="flex items-center space-x-4">
+                    <button onclick="switchView('user-portal')" id="nav-user-btn" class="flex items-center space-x-2 px-4 py-2 rounded-lg text-sm font-medium transition-colors bg-amber-50 text-amber-700">
+                        <i data-lucide="search" class="w-4 h-4"></i>
+                        <span>Buscar Reconocimiento</span>
+                    </button>
+                    <button onclick="openAdminAuthModal()" id="nav-admin-btn" class="flex items-center space-x-2 px-4 py-2 rounded-lg text-sm font-medium transition-colors text-slate-600 hover:text-slate-900 hover:bg-slate-100">
+                        <i data-lucide="settings" class="w-4 h-4"></i>
+                        <span>Panel Administrador</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Contenido Principal -->
+    <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        
+        <!-- VISTA 1: PORTAL DE USUARIOS (Búsqueda y Descarga) -->
+        <section id="view-user-portal" class="space-y-8">
+            <div class="max-w-xl mx-auto text-center space-y-4">
+                <span class="px-3 py-1 bg-amber-100 text-amber-800 rounded-full text-xs font-semibold uppercase tracking-wider">Obtén tu reconocimiento</span>
+                <h1 class="text-4xl font-extrabold tracking-tight text-slate-900 sm:text-5xl">
+                    Descarga tu Reconocimiento Oficial
+                </h1>
+                <p class="text-lg text-slate-600">
+                    Ingresa el identificador único o ID que te fue proporcionado por la institución para validar y descargar tu diploma personalizado.
+                </p>
+            </div>
+
+            <!-- Caja de Búsqueda -->
+            <div class="max-w-md mx-auto">
+                <form id="search-form" onsubmit="handleSearch(event)" class="bg-white p-6 rounded-2xl shadow-xl shadow-slate-200/50 border border-slate-100 space-y-4">
+                    <div>
+                        <label for="search-id" class="block text-sm font-medium text-slate-700 mb-1">Identificación del Participante (ID)</label>
+                        <div class="relative rounded-md shadow-sm">
+                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
+                                <i data-lucide="id-card" class="w-5 h-5"></i>
+                            </div>
+                            <input type="text" id="search-id" required class="block w-full pl-10 pr-3 py-3 border border-slate-300 rounded-xl focus:ring-2 focus:ring-amber-500 focus:border-amber-500 text-slate-900 placeholder-slate-400 text-sm" placeholder="Ejemplo: CERT-9872">
+                        </div>
+                    </div>
+                    <button type="submit" class="w-full bg-gradient-to-r from-amber-500 to-yellow-600 text-white font-medium py-3 px-4 rounded-xl shadow-lg shadow-amber-500/20 hover:from-amber-600 hover:to-yellow-700 transition-all flex items-center justify-center space-x-2">
+                        <i data-lucide="download" class="w-5 h-5"></i>
+                        <span>Descargar Constancia</span>
+                    </button>
+                </form>
+            </div>
+
+            <!-- Resultado de la Búsqueda -->
+            <div id="search-result-area" class="hidden max-w-4xl mx-auto space-y-6">
+                <div class="bg-emerald-50 border border-emerald-200 rounded-2xl p-6 flex items-center justify-between">
+                    <div class="flex items-center space-x-4">
+                        <div class="bg-emerald-100 p-3 rounded-xl text-emerald-700">
+                            <i data-lucide="check-circle" class="w-8 h-8"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-lg font-bold text-emerald-900" id="result-status-title">¡Registro Encontrado!</h3>
+                            <p class="text-slate-600" id="result-status-desc">Hemos localizado tu información. Puedes previsualizar y descargar tu documento abajo.</p>
+                        </div>
+                    </div>
+                    <div>
+                        <button onclick="downloadCertificate()" class="bg-slate-900 hover:bg-slate-800 text-white font-medium py-2 px-4 rounded-xl shadow-lg flex items-center space-x-2 transition-colors">
+                            <i data-lucide="download" class="w-4 h-4"></i>
+                            <span>Descargar PNG de Alta Resolución</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Contenedor del Canvas de Visualización -->
+                <div class="bg-white border border-slate-200 rounded-2xl p-4 sm:p-8 shadow-xl relative overflow-hidden flex flex-col items-center">
+                    <h4 class="text-sm font-semibold uppercase tracking-wider text-slate-400 mb-4">Vista Previa del Documento Oficial</h4>
+                    <div class="w-full max-w-3xl border border-slate-100 shadow-md rounded-lg overflow-hidden bg-slate-100">
+                        <!-- Canvas que renderiza el reconocimiento en vivo -->
+                        <canvas id="certificate-canvas" class="w-full h-auto block"></canvas>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- VISTA 2: PANEL DE ADMINISTRACIÓN -->
+        <section id="view-admin" class="hidden space-y-8 relative">
+            
+            <!-- BOTÓN 'X' DE CIERRE EN LA PARTE SUPERIOR DERECHA DEL PANEL -->
+            <div class="absolute -top-2 right-0 md:top-0">
+                <button onclick="closeAdminSession()" class="flex items-center justify-center p-2 rounded-full text-slate-400 hover:text-red-600 hover:bg-red-50 transition-all border border-slate-200 bg-white shadow-sm" title="Salir del Panel Administrador">
+                    <i data-lucide="x" class="w-6 h-6"></i>
+                </button>
+            </div>
+
+            <div class="flex flex-col md:flex-row md:items-center md:justify-between space-y-4 md:space-y-0 pr-12">
+                <div>
+                    <h1 class="text-3xl font-extrabold text-slate-900">Panel de Administración</h1>
+                    <p class="text-slate-500">Administra los datos de los participantes y personaliza el diseño de los diplomas.</p>
+                </div>
+                <div class="flex flex-wrap gap-2">
+                    <button onclick="openParticipantModal()" class="bg-amber-600 hover:bg-amber-700 text-white px-4 py-2 rounded-lg text-sm font-medium shadow-md flex items-center space-x-2 transition-colors">
+                        <i data-lucide="plus" class="w-4 h-4"></i>
+                        <span>Agregar Participante</span>
+                    </button>
+                    <button onclick="openImportModal()" class="bg-slate-800 hover:bg-slate-700 text-white px-4 py-2 rounded-lg text-sm font-medium shadow-md flex items-center space-x-2 transition-colors">
+                        <i data-lucide="upload" class="w-4 h-4"></i>
+                        <span>Importar por Bloque</span>
+                    </button>
+                    <button onclick="closeAdminSession()" class="border border-slate-300 hover:bg-slate-100 text-slate-700 px-4 py-2 rounded-lg text-sm font-medium flex items-center space-x-2 transition-colors">
+                        <i data-lucide="log-out" class="w-4 h-4"></i>
+                        <span>Cerrar Sesión</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Pestañas del Panel de Admin -->
+            <div class="border-b border-slate-200">
+                <nav class="flex space-x-8" aria-label="Tabs">
+                    <button onclick="switchAdminTab('participants')" id="tab-btn-participants" class="border-amber-500 text-amber-600 whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm flex items-center space-x-2">
+                        <i data-lucide="users" class="w-4 h-4"></i>
+                        <span>Participantes</span>
+                    </button>
+                    <button onclick="switchAdminTab('customizer')" id="tab-btn-customizer" class="border-transparent text-slate-500 hover:text-slate-700 hover:border-slate-300 whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm flex items-center space-x-2">
+                        <i data-lucide="palette" class="w-4 h-4"></i>
+                        <span>Diseño de Plantilla</span>
+                    </button>
+                    <button onclick="switchAdminTab('stats')" id="tab-btn-stats" class="border-transparent text-slate-500 hover:text-slate-700 hover:border-slate-300 whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm flex items-center space-x-2">
+                        <i data-lucide="bar-chart-2" class="w-4 h-4"></i>
+                        <span>Métricas</span>
+                    </button>
+                </nav>
+            </div>
+
+            <!-- Contenido Pestaña 1: Participantes -->
+            <div id="admin-tab-participants" class="space-y-6">
+                <!-- Filtros y Búsqueda interna -->
+                <div class="flex flex-col sm:flex-row gap-4 justify-between">
+                    <div class="relative max-w-xs w-full">
+                        <span class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
+                            <i data-lucide="search" class="w-4 h-4"></i>
+                        </span>
+                        <input type="text" id="admin-search-input" onkeyup="filterParticipantsTable()" class="block w-full pl-10 pr-3 py-2 border border-slate-300 rounded-lg text-sm bg-white placeholder-slate-400 text-slate-900" placeholder="Buscar por ID o Nombre...">
+                    </div>
+                    <div class="text-sm text-slate-500 flex items-center" id="table-count-label">
+                        Mostrando 0 registros
+                    </div>
+                </div>
+
+                <!-- Tabla de Datos -->
+                <div class="bg-white border border-slate-200 rounded-2xl overflow-hidden shadow-sm">
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full divide-y divide-slate-200 text-left text-sm text-slate-500">
+                            <thead class="bg-slate-50 text-slate-700 text-xs uppercase tracking-wider">
+                                <tr>
+                                    <th scope="col" class="px-6 py-4 font-semibold">ID</th>
+                                    <th scope="col" class="px-6 py-4 font-semibold">Nombre del Participante</th>
+                                    <th scope="col" class="px-6 py-4 font-semibold">Curso / Evento</th>
+                                    <th scope="col" class="px-6 py-4 font-semibold">Fecha Emisión</th>
+                                    <th scope="col" class="px-6 py-4 font-semibold">Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-slate-200 bg-white text-slate-900" id="participants-table-body">
+                                <!-- Filas dinámicas se insertan aquí -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Contenido Pestaña 2: Personalización de Plantilla -->
+            <div id="admin-tab-customizer" class="hidden grid grid-cols-1 lg:grid-cols-12 gap-8">
+                <!-- Controles -->
+                <div class="lg:col-span-5 bg-white border border-slate-200 rounded-2xl p-6 shadow-sm space-y-6">
+                    <h3 class="text-lg font-bold text-slate-900 flex items-center space-x-2">
+                        <i data-lucide="sliders" class="w-5 h-5 text-amber-500"></i>
+                        <span>Variables del Reconocimiento</span>
+                    </h3>
+                    
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-medium text-slate-700 mb-1">Título de Certificación</label>
+                            <input type="text" id="config-title" oninput="updateConfigAndRedraw()" class="block w-full border border-slate-300 rounded-lg px-3 py-2 text-sm">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-slate-700 mb-1">Leyenda del Certificado</label>
+                            <textarea id="config-reason" oninput="updateConfigAndRedraw()" rows="3" class="block w-full border border-slate-300 rounded-lg px-3 py-2 text-sm"></textarea>
+                        </div>
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-sm font-medium text-slate-700 mb-1">Nombre Autoridad</label>
+                                <input type="text" id="config-author" oninput="updateConfigAndRedraw()" class="block w-full border border-slate-300 rounded-lg px-3 py-2 text-sm">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-slate-700 mb-1">Cargo Autoridad</label>
+                                <input type="text" id="config-role" oninput="updateConfigAndRedraw()" class="block w-full border border-slate-300 rounded-lg px-3 py-2 text-sm">
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-sm font-medium text-slate-700 mb-1">Color Principal</label>
+                                <div class="flex items-center space-x-2">
+                                    <input type="color" id="config-primary-color" oninput="updateConfigAndRedraw()" class="h-9 w-9 rounded border border-slate-300 cursor-pointer">
+                                    <span class="text-xs text-slate-500 uppercase" id="primary-color-text">#123456</span>
+                                </div>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-slate-700 mb-1">Color Secundario</label>
+                                <div class="flex items-center space-x-2">
+                                    <input type="color" id="config-secondary-color" oninput="updateConfigAndRedraw()" class="h-9 w-9 rounded border border-slate-300 cursor-pointer">
+                                    <span class="text-xs text-slate-500 uppercase" id="secondary-color-text">#123456</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-slate-700 mb-1">Estilo de Plantilla</label>
+                            <select id="config-theme" onchange="updateConfigAndRedraw()" class="block w-full border border-slate-300 rounded-lg px-3 py-2 text-sm">
+                                <option value="golden">Clásico Dorado</option>
+                                <option value="modern">Moderno Corporativo</option>
+                                <option value="emerald">Sello Esmeralda</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="pt-4 border-t border-slate-100 flex justify-end">
+                        <button onclick="restoreDefaultTemplate()" class="text-sm text-slate-600 hover:text-slate-900 font-medium">
+                            Restaurar Valores Predeterminados
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Visualización de Plantilla (Simulador) -->
+                <div class="lg:col-span-7 space-y-4">
+                    <div class="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm flex flex-col items-center">
+                        <h4 class="text-sm font-semibold uppercase tracking-wider text-slate-400 mb-4">Simulador en Tiempo Real</h4>
+                        <div class="w-full border border-slate-100 shadow-md rounded-lg overflow-hidden bg-slate-100">
+                            <!-- Canvas para visualizar cambios del Admin -->
+                            <canvas id="admin-preview-canvas" class="w-full h-auto block"></canvas>
+                        </div>
+                        <p class="text-xs text-slate-400 mt-3 text-center">Nota: Esta simulación muestra cómo se renderizará el reconocimiento para los usuarios usando un nombre de prueba.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Contenido Pestaña 3: Estadísticas -->
+            <div id="admin-tab-stats" class="hidden space-y-6">
+                <!-- Tarjetas de Información -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div class="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm flex items-center space-x-4">
+                        <div class="p-3 bg-indigo-50 text-indigo-600 rounded-xl">
+                            <i data-lucide="users" class="w-8 h-8"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-2xl font-extrabold text-slate-900" id="stat-total-users">0</h3>
+                            <p class="text-sm font-medium text-slate-500">Total Participantes</p>
+                        </div>
+                    </div>
+                    <div class="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm flex items-center space-x-4">
+                        <div class="p-3 bg-emerald-50 text-emerald-600 rounded-xl">
+                            <i data-lucide="award" class="w-8 h-8"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-2xl font-extrabold text-slate-900" id="stat-distinct-events">0</h3>
+                            <p class="text-sm font-medium text-slate-500">Cursos/Eventos Registrados</p>
+                        </div>
+                    </div>
+                    <div class="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm flex items-center space-x-4">
+                        <div class="p-3 bg-amber-50 text-amber-600 rounded-xl">
+                            <i data-lucide="shield-check" class="w-8 h-8"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-2xl font-extrabold text-slate-900" id="stat-system-active">Activo</h3>
+                            <p class="text-sm font-medium text-slate-500">Estado de Servidores</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Gráfica o listado rápido de cursos populares -->
+                <div class="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm">
+                    <h3 class="text-lg font-bold text-slate-900 mb-4">Distribución por Cursos/Eventos</h3>
+                    <div id="stats-course-list" class="space-y-4">
+                        <!-- Cursos dinámicos -->
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-slate-900 text-slate-400 py-8 border-t border-slate-800">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center space-y-2">
+            <p class="text-sm">&copy; 2026 CertiRiec. Todos los derechos reservados.</p>
+            <p class="text-xs text-slate-500">Diseñado para la generación, distribución y auditoría segura de credenciales académicas y profesionales.</p>
+            <p class="text-xs text-slate-400 font-medium pt-2 border-t border-slate-800/50 mt-2">Realizado por Giodev.</p>
+        </div>
+    </footer>
+
+    <!-- MODAL 1: AUTHENTICACIÓN DE ADMINISTRADOR -->
+    <div id="modal-admin-auth" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+        <div class="bg-white rounded-2xl shadow-xl border border-slate-100 max-w-sm w-full p-6 space-y-4 relative">
+            <button onclick="closeAdminAuthModal()" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600">
+                <i data-lucide="x" class="w-5 h-5"></i>
+            </button>
+            <div class="text-center space-y-1">
+                <div class="mx-auto bg-amber-100 text-amber-700 p-3 rounded-full w-fit">
+                    <i data-lucide="lock" class="w-6 h-6"></i>
+                </div>
+                <h3 class="text-xl font-bold text-slate-900">Acceso Administrativo</h3>
+                <p class="text-sm text-slate-500">Ingresa tus credenciales para acceder al gestor</p>
+            </div>
+            
+            <form onsubmit="handleAdminLogin(event)" class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-slate-700 mb-1">Nombre de Usuario</label>
+                    <input type="text" id="auth-username" required class="block w-full border border-slate-300 rounded-xl px-3 py-2 text-sm text-slate-900" placeholder="admin">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-slate-700 mb-1">Contraseña</label>
+                    <input type="password" id="auth-password" required class="block w-full border border-slate-300 rounded-xl px-3 py-2 text-sm text-slate-900" placeholder="admin123">
+                </div>
+                <!-- Notificación de error -->
+                <p id="auth-error-msg" class="hidden text-xs text-red-600 font-medium"></p>
+                
+                <button type="submit" class="w-full bg-slate-900 hover:bg-slate-800 text-white font-medium py-2 rounded-xl text-sm transition-colors">
+                    Iniciar Sesión
+                </button>
+            </form>
+            <div class="text-xs text-center text-slate-400 bg-slate-50 py-2 rounded-lg">
+                <span class="font-semibold">Credenciales Demo:</span> admin / admin123
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL 2: CREAR / EDITAR PARTICIPANTE -->
+    <div id="modal-participant" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+        <div class="bg-white rounded-2xl shadow-xl border border-slate-100 max-w-md w-full p-6 space-y-4 relative">
+            <button onclick="closeParticipantModal()" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600">
+                <i data-lucide="x" class="w-5 h-5"></i>
+            </button>
+            
+            <h3 class="text-xl font-bold text-slate-900" id="participant-modal-title">Agregar Participante</h3>
+            
+            <form onsubmit="handleSaveParticipant(event)" class="space-y-4">
+                <input type="hidden" id="participant-index">
+                <div>
+                    <label class="block text-sm font-medium text-slate-700 mb-1">Identificador del Participante (ID)</label>
+                    <input type="text" id="participant-id" required class="block w-full border border-slate-300 rounded-xl px-3 py-2 text-sm text-slate-900" placeholder="Ej: CERT-2026">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-slate-700 mb-1">Nombre Completo</label>
+                    <input type="text" id="participant-name" required class="block w-full border border-slate-300 rounded-xl px-3 py-2 text-sm text-slate-900" placeholder="Ej: María José Ramírez">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-slate-700 mb-1">Nombre del Curso / Evento</label>
+                    <input type="text" id="participant-course" required class="block w-full border border-slate-300 rounded-xl px-3 py-2 text-sm text-slate-900" placeholder="Ej: Programación Frontend Moderna">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-slate-700 mb-1">Fecha de Otorgamiento</label>
+                    <input type="date" id="participant-date" required class="block w-full border border-slate-300 rounded-xl px-3 py-2 text-sm text-slate-900">
+                </div>
+                
+                <div class="flex space-x-3 pt-2">
+                    <button type="button" onclick="closeParticipantModal()" class="w-1/2 border border-slate-300 hover:bg-slate-100 text-slate-700 font-medium py-2 rounded-xl text-sm transition-colors">
+                        Cancelar
+                    </button>
+                    <button type="submit" class="w-1/2 bg-amber-600 hover:bg-amber-700 text-white font-medium py-2 rounded-xl text-sm transition-colors">
+                        Guardar Registro
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL 3: IMPORTACIÓN POR BLOQUE (CSV / TEXTO COPIADO) -->
+    <div id="modal-import" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+        <div class="bg-white rounded-2xl shadow-xl border border-slate-100 max-w-lg w-full p-6 space-y-4 relative">
+            <button onclick="closeImportModal()" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600">
+                <i data-lucide="x" class="w-5 h-5"></i>
+            </button>
+            
+            <h3 class="text-xl font-bold text-slate-900">Importar Participantes por Bloque</h3>
+            <p class="text-xs text-slate-500">Pega tus datos en formato estructurado (Valores separados por comas CSV). El formato de cada línea debe ser exactamente: <br><strong class="bg-slate-100 p-0.5 rounded">ID,Nombre Completo,Curso/Evento,Fecha(AAAA-MM-DD)</strong></p>
+            
+            <form onsubmit="handleImportCSV(event)" class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-slate-700 mb-1">Bloque de datos CSV</label>
+                    <textarea id="import-csv-text" required rows="8" class="block w-full border border-slate-300 rounded-xl px-3 py-2 text-xs font-mono text-slate-900" placeholder="CERT-101,Ana López,JavaScript Básico,2026-05-15&#10;CERT-102,Juan Gómez,React Avanzado,2026-06-20"></textarea>
+                </div>
+                
+                <div class="flex space-x-3">
+                    <button type="button" onclick="closeImportModal()" class="w-1/2 border border-slate-300 hover:bg-slate-100 text-slate-700 font-medium py-2 rounded-xl text-sm transition-colors">
+                        Cancelar
+                    </button>
+                    <button type="submit" class="w-1/2 bg-slate-950 hover:bg-slate-900 text-white font-medium py-2 rounded-xl text-sm transition-colors">
+                        Procesar e Importar
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL 4: ALERTA DE ID NO ENCONTRADO EN LA BASE DE DATOS -->
+    <div id="modal-not-found" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+        <div class="bg-white rounded-2xl shadow-xl border border-slate-100 max-w-sm w-full p-6 space-y-5 relative text-center">
+            <button onclick="closeNotFoundModal()" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600">
+                <i data-lucide="x" class="w-5 h-5"></i>
+            </button>
+            <div class="mx-auto bg-red-100 text-red-600 p-4 rounded-full w-fit">
+                <i data-lucide="alert-triangle" class="w-8 h-8"></i>
+            </div>
+            <div class="space-y-2">
+                <h3 class="text-xl font-bold text-slate-900">ID No Encontrado</h3>
+                <p class="text-sm text-slate-500">
+                    El identificador ingresado <strong id="invalid-id-display" class="font-mono bg-slate-100 px-1 py-0.5 rounded text-slate-700"></strong> no está registrado en nuestra Base de Datos.
+                </p>
+                <p class="text-xs text-slate-400">
+                    Por favor, asegúrate de escribirlo correctamente incluyendo guiones y mayúsculas, o contacta con el administrador del sistema.
+                </p>
+            </div>
+            <button onclick="closeNotFoundModal()" class="w-full bg-slate-900 hover:bg-slate-800 text-white font-medium py-2.5 rounded-xl text-sm transition-colors">
+                Aceptar
+            </button>
+        </div>
+    </div>
+
+    <!-- NOTIFICACIONES TOAST PERSONALIZADAS -->
+    <div id="toast-container" class="fixed bottom-5 right-5 space-y-2 z-50"></div>
+
+    <script>
+        // --- BASE DE DATOS IN-MEMORY (Inicia con datos de demostración) ---
+        let participants = [
+            { id: "CERT-9872", name: "Sofía Valentina Castro", course: "Maestría en Desarrollo de Aplicaciones Web", date: "2026-04-12" },
+            { id: "CERT-4155", name: "Esteban Martínez Ruiz", course: "Diplomado Internacional en Inteligencia Artificial", date: "2026-05-18" },
+            { id: "CERT-6721", name: "Lucía Fernández Flores", course: "Especialidad en Diseño de Experiencia de Usuario", date: "2026-06-01" },
+            { id: "CERT-1049", name: "Carlos Daniel Sosa", course: "Maestría en Desarrollo de Aplicaciones Web", date: "2026-04-12" }
+        ];
+
+        // --- CONFIGURACIÓN DE PLANTILLA DE RECONOCIMIENTO ---
+        let templateConfig = {
+            title: "RECONOCIMIENTO",
+            reason: "Por haber aprobado satisfactoriamente todos los módulos teóricos y prácticos con un excelente desempeño académico en el programa formativo de:",
+            author: "Dra. Alejandra Mendoza",
+            role: "Directora Académica Global",
+            primaryColor: "#B45309", // Ámbar oscuro
+            secondaryColor: "#1E293B", // Slate
+            theme: "golden" // Temas disponibles: golden, modern, emerald
+        };
+
+        // Estado Global del Sistema
+        let currentView = 'user-portal';
+        let currentAdminTab = 'participants';
+        let isAdminLoggedIn = false;
+        let selectedUserForPreview = null;
+
+        // Al iniciar la aplicación
+        window.addEventListener('load', () => {
+            lucide.createIcons();
+            initDefaultConfigInputs();
+            renderParticipantsTable();
+            updateStats();
+        });
+
+        // --- MANEJO DE VISTAS ---
+        function switchView(view) {
+            currentView = view;
+            
+            const userPortal = document.getElementById('view-user-portal');
+            const adminView = document.getElementById('view-admin');
+            
+            const navUserBtn = document.getElementById('nav-user-btn');
+            const navAdminBtn = document.getElementById('nav-admin-btn');
+
+            if (view === 'user-portal') {
+                userPortal.remove; // Evitar manipulación del DOM nativa incorrecta
+                userPortal.classList.remove('hidden');
+                adminView.classList.add('hidden');
+                
+                navUserBtn.classList.add('bg-amber-50', 'text-amber-700');
+                navUserBtn.classList.remove('text-slate-600', 'hover:text-slate-900', 'hover:bg-slate-100');
+                
+                if (isAdminLoggedIn) {
+                    navAdminBtn.classList.add('text-slate-600', 'hover:text-slate-900', 'hover:bg-slate-100');
+                    navAdminBtn.classList.remove('bg-amber-50', 'text-amber-700');
+                } else {
+                    navAdminBtn.classList.add('text-slate-600', 'hover:text-slate-900', 'hover:bg-slate-100');
+                    navAdminBtn.classList.remove('bg-amber-50', 'text-amber-700');
+                }
+            } else if (view === 'admin') {
+                if (!isAdminLoggedIn) {
+                    openAdminAuthModal();
+                    return;
+                }
+                userPortal.classList.add('hidden');
+                adminView.classList.remove('hidden');
+                
+                navAdminBtn.classList.add('bg-amber-50', 'text-amber-700');
+                navAdminBtn.classList.remove('text-slate-600', 'hover:text-slate-900', 'hover:bg-slate-100');
+                
+                navUserBtn.classList.add('text-slate-600', 'hover:text-slate-900', 'hover:bg-slate-100');
+                navUserBtn.classList.remove('bg-amber-50', 'text-amber-700');
+                
+                // Redibujar vista previa de admin en su pestaña correspondiente
+                setTimeout(() => {
+                    drawCertificateOnCanvas('admin-preview-canvas', { name: "Persona de Prueba", course: "Curso o Programa Ejemplo", date: "2026-06-20" });
+                }, 50);
+            }
+        }
+
+        // Sub-pestañas de administración
+        function switchAdminTab(tab) {
+            currentAdminTab = tab;
+            
+            const tabParticipants = document.getElementById('admin-tab-participants');
+            const tabCustomizer = document.getElementById('admin-tab-customizer');
+            const tabStats = document.getElementById('admin-tab-stats');
+            
+            const btnParticipants = document.getElementById('tab-btn-participants');
+            const btnCustomizer = document.getElementById('tab-btn-customizer');
+            const btnStats = document.getElementById('tab-btn-stats');
+
+            // Ocultar todos
+            tabParticipants.classList.add('hidden');
+            tabCustomizer.classList.add('hidden');
+            tabStats.classList.add('hidden');
+
+            // Desmarcar botones
+            [btnParticipants, btnCustomizer, btnStats].forEach(btn => {
+                btn.classList.remove('border-amber-500', 'text-amber-600');
+                btn.classList.add('border-transparent', 'text-slate-500', 'hover:text-slate-700', 'hover:border-slate-300');
+            });
+
+            if (tab === 'participants') {
+                tabParticipants.classList.remove('hidden');
+                btnParticipants.classList.add('border-amber-500', 'text-amber-600');
+                btnParticipants.classList.remove('border-transparent', 'text-slate-500');
+            } else if (tab === 'customizer') {
+                tabCustomizer.classList.remove('hidden');
+                btnCustomizer.classList.add('border-amber-500', 'text-amber-600');
+                btnCustomizer.classList.remove('border-transparent', 'text-slate-500');
+                
+                // Forzar redibujado de la vista previa del simulador
+                setTimeout(() => {
+                    drawCertificateOnCanvas('admin-preview-canvas', { name: "Persona de Prueba", course: "Curso o Programa Ejemplo", date: "2026-06-20" });
+                }, 50);
+            } else if (tab === 'stats') {
+                tabStats.classList.remove('hidden');
+                btnStats.classList.add('border-amber-500', 'text-amber-600');
+                btnStats.classList.remove('border-transparent', 'text-slate-500');
+                updateStats();
+            }
+        }
+
+        // --- SISTEMA DE ALERTS / TOASTS ---
+        function showToast(title, desc, type = 'success') {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            toast.className = `flex items-start p-4 space-x-3 bg-white border rounded-xl shadow-lg transition-all duration-300 transform translate-y-2 opacity-0 max-w-sm w-full`;
+            
+            let colorClass = 'text-emerald-500 border-emerald-100';
+            let icon = 'check-circle';
+            if (type === 'error') {
+                colorClass = 'text-red-500 border-red-100';
+                icon = 'alert-triangle';
+            } else if (type === 'info') {
+                colorClass = 'text-blue-500 border-blue-100';
+                icon = 'info';
+            }
+
+            toast.innerHTML = `
+                <div class="${colorClass} p-1">
+                    <i data-lucide="${icon}" class="w-5 h-5"></i>
+                </div>
+                <div class="flex-grow">
+                    <h4 class="text-sm font-bold text-slate-900">${title}</h4>
+                    <p class="text-xs text-slate-500">${desc}</p>
+                </div>
+                <button class="text-slate-300 hover:text-slate-500" onclick="this.parentElement.remove()">
+                    <i data-lucide="x" class="w-4 h-4"></i>
+                </button>
+            `;
+            
+            container.appendChild(toast);
+            lucide.createIcons({ attrs: { class: ['w-4', 'h-4'] } });
+
+            // Animación Entrada
+            setTimeout(() => {
+                toast.classList.remove('translate-y-2', 'opacity-0');
+            }, 10);
+
+            // Desvanecer después de 4 segundos
+            setTimeout(() => {
+                toast.classList.add('opacity-0', 'translate-y-2');
+                setTimeout(() => toast.remove(), 300);
+            }, 4000);
+        }
+
+        // --- DIALOGOS MODALES ---
+        function openAdminAuthModal() {
+            document.getElementById('modal-admin-auth').classList.remove('hidden');
+        }
+        function closeAdminAuthModal() {
+            document.getElementById('modal-admin-auth').classList.add('hidden');
+            document.getElementById('auth-error-msg').classList.add('hidden');
+        }
+        function openParticipantModal() {
+            document.getElementById('participant-modal-title').textContent = "Agregar Participante";
+            document.getElementById('participant-index').value = "";
+            document.getElementById('participant-id').value = "";
+            document.getElementById('participant-name').value = "";
+            document.getElementById('participant-course').value = "";
+            document.getElementById('participant-date').value = new Date().toISOString().split('T')[0];
+            document.getElementById('modal-participant').classList.remove('hidden');
+        }
+        function closeParticipantModal() {
+            document.getElementById('modal-participant').classList.add('hidden');
+        }
+        function openImportModal() {
+            document.getElementById('import-csv-text').value = "";
+            document.getElementById('modal-import').classList.remove('hidden');
+        }
+        function closeImportModal() {
+            document.getElementById('modal-import').classList.add('hidden');
+        }
+
+        // Abrir y cerrar modal de ID No Encontrado
+        function openNotFoundModal(invalidId) {
+            document.getElementById('invalid-id-display').textContent = invalidId;
+            document.getElementById('modal-not-found').classList.remove('hidden');
+            lucide.createIcons();
+        }
+        function closeNotFoundModal() {
+            document.getElementById('modal-not-found').classList.add('hidden');
+        }
+
+        // --- SISTEMA DE LOGS DE ADMINISTRACIÓN ---
+        function handleAdminLogin(event) {
+            event.preventDefault();
+            const user = document.getElementById('auth-username').value;
+            const pass = document.getElementById('auth-password').value;
+            const errorMsg = document.getElementById('auth-error-msg');
+
+            // Credenciales simuladas seguras
+            if (user === 'admin' && pass === 'admin123') {
+                isAdminLoggedIn = true;
+                closeAdminAuthModal();
+                showToast("Acceso Concedido", "Has iniciado sesión como Administrador con éxito.");
+                switchView('admin');
+            } else {
+                errorMsg.textContent = "Usuario o contraseña inválidos. Por favor verifica los datos demo.";
+                errorMsg.classList.remove('hidden');
+            }
+        }
+
+        function closeAdminSession() {
+            isAdminLoggedIn = false;
+            switchView('user-portal');
+            showToast("Sesión Cerrada", "Has salido del panel administrativo correctamente.", "info");
+        }
+
+        // --- BUSCADOR DEL PORTAL DE USUARIOS ---
+        function handleSearch(event) {
+            event.preventDefault();
+            const idInput = document.getElementById('search-id').value.trim();
+            const resultArea = document.getElementById('search-result-area');
+
+            // Buscar en nuestra colección in-memory
+            const matchedUser = participants.find(p => p.id.toLowerCase() === idInput.toLowerCase());
+
+            if (matchedUser) {
+                selectedUserForPreview = matchedUser;
+                resultArea.classList.remove('hidden');
+                
+                // Mostrar alerta de éxito
+                showToast("¡Registro Localizado!", `Se encontró el registro a nombre de ${matchedUser.name}.`, "success");
+                
+                // Renderizar el certificado
+                setTimeout(() => {
+                    drawCertificateOnCanvas('certificate-canvas', matchedUser);
+                }, 100);
+            } else {
+                resultArea.classList.add('hidden');
+                selectedUserForPreview = null;
+                
+                // DESPLIEGA EL NUEVO DIALOGO MODAL EN LUGAR DE TOAST O ALERT NATIVO
+                openNotFoundModal(idInput);
+            }
+        }
+
+        // --- RENDERIZADOR DEL CERTIFICADO EN HTML5 CANVAS ---
+        function drawCertificateOnCanvas(canvasId, userData) {
+            const canvas = document.getElementById(canvasId);
+            if (!canvas) return;
+            const ctx = canvas.getContext('2d');
+
+            const width = 1920;
+            const height = 1358;
+            canvas.width = width;
+            canvas.height = height;
+
+            ctx.fillStyle = '#FCFBF7';
+            ctx.fillRect(0, 0, width, height);
+
+            if (templateConfig.theme === 'golden') {
+                drawGoldenThemeBorders(ctx, width, height);
+            } else if (templateConfig.theme === 'modern') {
+                drawModernThemeBorders(ctx, width, height);
+            } else if (templateConfig.theme === 'emerald') {
+                drawEmeraldThemeBorders(ctx, width, height);
+            }
+
+            ctx.fillStyle = templateConfig.secondaryColor;
+            ctx.font = '700 24px "Inter", sans-serif';
+            ctx.textAlign = 'center';
+            ctx.letterSpacing = '10px';
+            ctx.fillText("CERTIFICACIÓN EXCLUSIVA DE COMPETENCIAS", width / 2, 220);
+
+            drawOrnateDivider(ctx, width / 2, 260, templateConfig.primaryColor);
+
+            ctx.fillStyle = templateConfig.primaryColor;
+            ctx.font = '800 85px "Cinzel", Georgia, serif';
+            ctx.letterSpacing = '4px';
+            ctx.fillText(templateConfig.title.toUpperCase(), width / 2, 380);
+
+            ctx.fillStyle = '#64748B';
+            ctx.font = 'italic 500 28px "Inter", sans-serif';
+            ctx.letterSpacing = '1px';
+            ctx.fillText("Este documento oficial se otorga con honores a:", width / 2, 470);
+
+            ctx.fillStyle = templateConfig.secondaryColor;
+            ctx.font = 'bold 82px "Cinzel", Georgia, serif';
+            ctx.letterSpacing = '1px';
+            ctx.fillText(userData.name, width / 2, 590);
+
+            ctx.strokeStyle = templateConfig.primaryColor;
+            ctx.lineWidth = 3;
+            ctx.beginPath();
+            ctx.moveTo(width / 2 - 250, 630);
+            ctx.lineTo(width / 2 + 250, 630);
+            ctx.stroke();
+
+            ctx.fillStyle = '#334155';
+            ctx.font = '400 28px "Inter", sans-serif';
+            const reasonText = templateConfig.reason;
+            wrapText(ctx, reasonText, width / 2, 700, 1100, 42);
+
+            ctx.fillStyle = templateConfig.primaryColor;
+            ctx.font = '700 48px "Inter", sans-serif';
+            ctx.fillText(userData.course, width / 2, 850);
+
+            const dateObj = new Date(userData.date);
+            const formattedDate = dateObj.toLocaleDateString('es-ES', { year: 'numeric', month: 'long', day: 'numeric', timeZone: 'UTC' });
+            ctx.fillStyle = '#64748B';
+            ctx.font = '500 24px "Inter", sans-serif';
+            ctx.fillText(`Emitido el día ${formattedDate} para validez internacional.`, width / 2, 950);
+
+            ctx.strokeStyle = '#94A3B8';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.moveTo(350, 1140);
+            ctx.lineTo(750, 1140);
+            ctx.stroke();
+
+            ctx.fillStyle = templateConfig.secondaryColor;
+            ctx.font = '600 24px "Inter", sans-serif';
+            ctx.fillText(templateConfig.author, 550, 1180);
+            ctx.fillStyle = '#64748B';
+            ctx.font = '400 20px "Inter", sans-serif';
+            ctx.fillText(templateConfig.role, 550, 1210);
+
+            drawSecuritySeal(ctx, width / 2, 1130, templateConfig.primaryColor);
+
+            ctx.strokeStyle = '#94A3B8';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.moveTo(1170, 1140);
+            ctx.lineTo(1570, 1140);
+            ctx.stroke();
+
+            ctx.fillStyle = templateConfig.secondaryColor;
+            ctx.font = 'bold 22px "Inter", sans-serif';
+            ctx.fillText(userData.id, 1370, 1185);
+            ctx.fillStyle = '#64748B';
+            ctx.font = '400 18px "Inter", sans-serif';
+            ctx.fillText("Código Único de Auditoría", 1370, 1215);
+        }
+
+        // --- SUB-FUNCIONES DE DIBUJO EN CANVAS ---
+        function wrapText(context, text, x, y, maxWidth, lineHeight) {
+            const words = text.split(' ');
+            let line = '';
+            let currentY = y;
+
+            for (let n = 0; n < words.length; n++) {
+                let testLine = line + words[n] + ' ';
+                let metrics = context.measureText(testLine);
+                let testWidth = metrics.width;
+                if (testWidth > maxWidth && n > 0) {
+                    context.fillText(line, x, currentY);
+                    line = words[n] + ' ';
+                    currentY += lineHeight;
+                } else {
+                    line = testLine;
+                }
+            }
+            context.fillText(line, x, currentY);
+        }
+
+        function drawOrnateDivider(ctx, cx, cy, color) {
+            ctx.strokeStyle = color;
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.moveTo(cx - 150, cy);
+            ctx.lineTo(cx - 20, cy);
+            ctx.moveTo(cx, cy - 8);
+            ctx.lineTo(cx + 8, cy);
+            ctx.lineTo(cx, cy + 8);
+            ctx.lineTo(cx - 8, cy);
+            ctx.closePath();
+            ctx.moveTo(cx + 20, cy);
+            ctx.lineTo(cx + 150, cy);
+            ctx.stroke();
+            
+            ctx.fillStyle = color;
+            ctx.fill();
+        }
+
+        function drawSecuritySeal(ctx, cx, cy, color) {
+            ctx.strokeStyle = color;
+            ctx.lineWidth = 3;
+            ctx.beginPath();
+            ctx.arc(cx, cy, 75, 0, 2 * Math.PI);
+            ctx.stroke();
+
+            ctx.strokeStyle = color;
+            ctx.lineWidth = 1;
+            ctx.beginPath();
+            ctx.arc(cx, cy, 68, 0, 2 * Math.PI);
+            ctx.stroke();
+
+            ctx.fillStyle = color;
+            ctx.font = '24px "Inter", sans-serif';
+            ctx.textAlign = 'center';
+            ctx.fillText("VALID", cx, cy - 10);
+            
+            ctx.font = 'bold 16px "Inter", sans-serif';
+            ctx.fillText("SECURE", cx, cy + 15);
+
+            ctx.font = '10px "Inter", sans-serif';
+            ctx.fillText("★ ★ ★", cx, cy + 32);
+        }
+
+        // --- ESTILOS DE BORDES (TEMAS) ---
+        function drawGoldenThemeBorders(ctx, w, h) {
+            ctx.strokeStyle = '#D97706';
+            ctx.lineWidth = 4;
+            ctx.strokeRect(40, 40, w - 80, h - 80);
+
+            ctx.strokeStyle = '#B45309';
+            ctx.lineWidth = 1;
+            ctx.strokeRect(55, 55, w - 110, h - 110);
+            ctx.strokeRect(62, 62, w - 124, h - 124);
+
+            const corners = [
+                { x: 55, y: 55, dx: 1, dy: 1 },
+                { x: w - 55, y: 55, dx: -1, dy: 1 },
+                { x: 55, y: h - 55, dx: 1, dy: -1 },
+                { x: w - 55, y: h - 55, dx: -1, dy: -1 }
+            ];
+
+            ctx.fillStyle = '#B45309';
+            corners.forEach(c => {
+                ctx.beginPath();
+                ctx.moveTo(c.x, c.y);
+                ctx.lineTo(c.x + 40 * c.dx, c.y);
+                ctx.lineTo(c.x + 40 * c.dx, c.y + 10 * c.dy);
+                ctx.lineTo(c.x + 10 * c.dx, c.y + 10 * c.dy);
+                ctx.lineTo(c.x + 10 * c.dx, c.y + 40 * c.dy);
+                ctx.lineTo(c.x, c.y + 40 * c.dy);
+                ctx.closePath();
+                ctx.fill();
+            });
+        }
+
+        function drawModernThemeBorders(ctx, w, h) {
+            ctx.fillStyle = templateConfig.primaryColor;
+            ctx.beginPath();
+            ctx.moveTo(0, 0);
+            ctx.lineTo(400, 0);
+            ctx.lineTo(0, 300);
+            ctx.closePath();
+            ctx.fill();
+
+            ctx.fillStyle = templateConfig.secondaryColor;
+            ctx.beginPath();
+            ctx.moveTo(w, h);
+            ctx.lineTo(w - 400, h);
+            ctx.lineTo(w, h - 300);
+            ctx.closePath();
+            ctx.fill();
+
+            ctx.strokeStyle = templateConfig.secondaryColor;
+            ctx.lineWidth = 3;
+            ctx.beginPath();
+            ctx.moveTo(50, 50);
+            ctx.lineTo(w - 50, 50);
+            ctx.lineTo(w - 50, h - 50);
+            ctx.lineTo(50, h - 50);
+            ctx.closePath();
+            ctx.stroke();
+        }
+
+        function drawEmeraldThemeBorders(ctx, w, h) {
+            ctx.fillStyle = '#064E3B';
+            ctx.fillRect(0, 0, w, 40);
+            ctx.fillRect(0, 0, 40, h);
+            ctx.fillRect(w - 40, 0, 40, h);
+            ctx.fillRect(0, h - 40, w, 40);
+
+            ctx.strokeStyle = '#F59E0B';
+            ctx.lineWidth = 3;
+            ctx.strokeRect(55, 55, w - 110, h - 110);
+        }
+
+        // --- ACCIÓN: DESCARGAR RECONOCIMIENTO ---
+        function downloadCertificate() {
+            if (!selectedUserForPreview) {
+                showToast("Acción Inválida", "Primero debes realizar una búsqueda exitosa de tu registro.", "error");
+                return;
+            }
+
+            const canvas = document.getElementById('certificate-canvas');
+            const dataURL = canvas.toDataURL('image/png');
+            
+            const link = document.createElement('a');
+            link.download = `Reconocimiento_${selectedUserForPreview.name.replace(/\s+/g, '_')}.png`;
+            link.href = dataURL;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+
+            showToast("Descarga Iniciada", "Tu archivo PNG de alta resolución se ha guardado.", "success");
+        }
+
+        // --- CONTROLADORES DEL GESTOR (ADMIN PANEL) ---
+        function initDefaultConfigInputs() {
+            document.getElementById('config-title').value = templateConfig.title;
+            document.getElementById('config-reason').value = templateConfig.reason;
+            document.getElementById('config-author').value = templateConfig.author;
+            document.getElementById('config-role').value = templateConfig.role;
+            document.getElementById('config-primary-color').value = templateConfig.primaryColor;
+            document.getElementById('config-secondary-color').value = templateConfig.secondaryColor;
+            document.getElementById('config-theme').value = templateConfig.theme;
+
+            document.getElementById('primary-color-text').textContent = templateConfig.primaryColor;
+            document.getElementById('secondary-color-text').textContent = templateConfig.secondaryColor;
+        }
+
+        function updateConfigAndRedraw() {
+            templateConfig.title = document.getElementById('config-title').value;
+            templateConfig.reason = document.getElementById('config-reason').value;
+            templateConfig.author = document.getElementById('config-author').value;
+            templateConfig.role = document.getElementById('config-role').value;
+            templateConfig.primaryColor = document.getElementById('config-primary-color').value;
+            templateConfig.secondaryColor = document.getElementById('config-secondary-color').value;
+            templateConfig.theme = document.getElementById('config-theme').value;
+
+            document.getElementById('primary-color-text').textContent = templateConfig.primaryColor;
+            document.getElementById('secondary-color-text').textContent = templateConfig.secondaryColor;
+
+            drawCertificateOnCanvas('admin-preview-canvas', { name: "Persona de Prueba", course: "Curso o Programa Ejemplo", date: "2026-06-20" });
+
+            if (selectedUserForPreview) {
+                drawCertificateOnCanvas('certificate-canvas', selectedUserForPreview);
+            }
+        }
+
+        function restoreDefaultTemplate() {
+            templateConfig = {
+                title: "RECONOCIMIENTO",
+                reason: "Por haber aprobado satisfactoriamente todos los módulos teóricos y prácticos con un excelente desempeño académico en el programa formativo de:",
+                author: "Dra. Alejandra Mendoza",
+                role: "Directora Académica Global",
+                primaryColor: "#B45309",
+                secondaryColor: "#1E293B",
+                theme: "golden"
+            };
+            initDefaultConfigInputs();
+            updateConfigAndRedraw();
+            showToast("Restauración Exitosa", "Se han restablecido los valores iniciales de diseño.", "info");
+        }
+
+        function renderParticipantsTable() {
+            const tbody = document.getElementById('participants-table-body');
+            tbody.innerHTML = '';
+
+            participants.forEach((p, index) => {
+                const tr = document.createElement('tr');
+                tr.className = 'hover:bg-slate-50 transition-colors';
+                
+                const dateObj = new Date(p.date);
+                const formatted = dateObj.toLocaleDateString('es-ES', { year: 'numeric', month: '2-digit', day: '2-digit', timeZone: 'UTC' });
+
+                tr.innerHTML = `
+                    <td class="px-6 py-4 whitespace-nowrap font-mono text-xs font-bold text-slate-600">${p.id}</td>
+                    <td class="px-6 py-4 whitespace-nowrap font-medium text-slate-900">${p.name}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-slate-600">${p.course}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-slate-500">${formatted}</td>
+                    <td class="px-6 py-4 whitespace-nowrap space-x-2">
+                        <button onclick="editParticipant(${index})" class="text-amber-600 hover:text-amber-900 font-semibold text-xs inline-flex items-center space-x-1">
+                            <i data-lucide="edit-3" class="w-3.5 h-3.5"></i>
+                            <span>Editar</span>
+                        </button>
+                        <button onclick="deleteParticipant(${index})" class="text-red-600 hover:text-red-900 font-semibold text-xs inline-flex items-center space-x-1">
+                            <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+                            <span>Eliminar</span>
+                        </button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+
+            document.getElementById('table-count-label').textContent = `Mostrando ${participants.length} registros`;
+            lucide.createIcons();
+        }
+
+        function filterParticipantsTable() {
+            const query = document.getElementById('admin-search-input').value.toLowerCase();
+            const rows = document.querySelectorAll('#participants-table-body tr');
+            let visibleCount = 0;
+
+            rows.forEach(row => {
+                const text = row.innerText.toLowerCase();
+                if (text.includes(query)) {
+                    row.classList.remove('hidden');
+                    visibleCount++;
+                } else {
+                    row.classList.add('hidden');
+                }
+            });
+
+            document.getElementById('table-count-label').textContent = `Filtrados ${visibleCount} de ${participants.length} registros`;
+        }
+
+        function deleteParticipant(index) {
+            const user = participants[index];
+            
+            const confirmBox = document.createElement('div');
+            confirmBox.className = 'fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center z-50 p-4';
+            confirmBox.innerHTML = `
+                <div class="bg-white rounded-2xl p-6 max-w-sm w-full space-y-4">
+                    <h3 class="text-lg font-bold text-slate-900">¿Eliminar registro?</h3>
+                    <p class="text-sm text-slate-500">¿Estás seguro de que deseas eliminar a <strong>${user.name}</strong>? Esta acción no se puede deshacer.</p>
+                    <div class="flex space-x-3">
+                        <button id="cancel-del" class="w-1/2 border border-slate-300 py-2 rounded-xl text-sm font-medium hover:bg-slate-100 transition-colors">Cancelar</button>
+                        <button id="confirm-del" class="w-1/2 bg-red-600 text-white py-2 rounded-xl text-sm font-medium hover:bg-red-700 transition-colors">Eliminar</button>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(confirmBox);
+
+            document.getElementById('cancel-del').onclick = () => confirmBox.remove();
+            document.getElementById('confirm-del').onclick = () => {
+                participants.splice(index, 1);
+                renderParticipantsTable();
+                updateStats();
+                confirmBox.remove();
+                showToast("Registro Eliminado", `Se ha quitado a ${user.name} de la base de datos.`, "info");
+            };
+        }
+
+        function editParticipant(index) {
+            const p = participants[index];
+            document.getElementById('participant-modal-title').textContent = "Editar Participante";
+            document.getElementById('participant-index').value = index;
+            document.getElementById('participant-id').value = p.id;
+            document.getElementById('participant-name').value = p.name;
+            document.getElementById('participant-course').value = p.course;
+            document.getElementById('participant-date').value = p.date;
+            
+            document.getElementById('modal-participant').classList.remove('hidden');
+        }
+
+        function handleSaveParticipant(event) {
+            event.preventDefault();
+            const indexVal = document.getElementById('participant-index').value;
+            const pId = document.getElementById('participant-id').value.trim();
+            const pName = document.getElementById('participant-name').value.trim();
+            const pCourse = document.getElementById('participant-course').value.trim();
+            const pDate = document.getElementById('participant-date').value;
+
+            const newObj = { id: pId, name: pName, course: pCourse, date: pDate };
+
+            if (indexVal === "") {
+                if (participants.some(p => p.id.toLowerCase() === pId.toLowerCase())) {
+                    showToast("ID Duplicado", "Ya existe un participante registrado con esa identificación.", "error");
+                    return;
+                }
+                participants.push(newObj);
+                showToast("Registro Creado", `Se ha agregado a ${pName} correctamente.`);
+            } else {
+                const index = parseInt(indexVal);
+                const hasColision = participants.some((p, i) => i !== index && p.id.toLowerCase() === pId.toLowerCase());
+                if (hasColision) {
+                    showToast("ID Duplicado", "Ese identificador ya pertenece a otro participante.", "error");
+                    return;
+                }
+                participants[index] = newObj;
+                showToast("Registro Actualizado", `Los datos de ${pName} fueron guardados.`);
+            }
+
+            closeParticipantModal();
+            renderParticipantsTable();
+            updateStats();
+        }
+
+        function handleImportCSV(event) {
+            event.preventDefault();
+            const csvText = document.getElementById('import-csv-text').value.trim();
+            const lines = csvText.split('\n');
+            let successCount = 0;
+            let errorLines = [];
+
+            lines.forEach((line, index) => {
+                if (line.trim() === "") return;
+                const columns = line.split(',');
+                
+                if (columns.length >= 4) {
+                    const id = columns[0].trim();
+                    const name = columns[1].trim();
+                    const course = columns[2].trim();
+                    const date = columns[3].trim();
+
+                    const isIdDuplicate = participants.some(p => p.id.toLowerCase() === id.toLowerCase());
+                    const isDateValid = !isNaN(Date.parse(date));
+
+                    if (!isIdDuplicate && isDateValid && id && name && course) {
+                        participants.push({ id, name, course, date });
+                        successCount++;
+                    } else {
+                        errorLines.push(index + 1);
+                    }
+                } else {
+                    errorLines.push(index + 1);
+                }
+            });
+
+            closeImportModal();
+            renderParticipantsTable();
+            updateStats();
+
+            if (successCount > 0) {
+                if (errorLines.length > 0) {
+                    showToast("Importación Parcial", `Se cargaron ${successCount} registros. Hubo errores en líneas: ${errorLines.join(', ')}`, "info");
+                } else {
+                    showToast("Importación Completa", `Se han agregado exitosamente los ${successCount} registros procesados.`, "success");
+                }
+            } else {
+                showToast("Error en Carga", "No se pudo importar ningún registro. Verifica el formato e IDs duplicados.", "error");
+            }
+        }
+
+        function updateStats() {
+            document.getElementById('stat-total-users').textContent = participants.length;
+
+            const courses = {};
+            participants.forEach(p => {
+                courses[p.course] = (courses[p.course] || 0) + 1;
+            });
+
+            const uniqueCoursesCount = Object.keys(courses).length;
+            document.getElementById('stat-distinct-events').textContent = uniqueCoursesCount;
+
+            const container = document.getElementById('stats-course-list');
+            container.innerHTML = '';
+
+            if (uniqueCoursesCount === 0) {
+                container.innerHTML = `<p class="text-slate-400 text-sm">Sin datos para graficar.</p>`;
+                return;
+            }
+
+            for (const [courseName, count] of Object.entries(courses)) {
+                const percentage = Math.round((count / participants.length) * 100);
+                const item = document.createElement('div');
+                item.className = 'space-y-1';
+                item.innerHTML = `
+                    <div class="flex justify-between text-sm">
+                        <span class="font-semibold text-slate-800">${courseName}</span>
+                        <span class="text-slate-500 font-medium">${count} participantes (${percentage}%)</span>
+                    </div>
+                    <div class="w-full bg-slate-100 rounded-full h-2.5">
+                        <div class="bg-amber-500 h-2.5 rounded-full" style="width: ${percentage}%"></div>
+                    </div>
+                `;
+                container.appendChild(item);
+            }
+        }
+    </script>
+</body>
+</html>
