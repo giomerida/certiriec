@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gestor de Constancias Personalizados - CertiRiec</title>
+    <title>Gestor de Constancias - CertiRiec</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Iconos Lucide -->
@@ -151,7 +151,7 @@
                 <div class="flex flex-wrap gap-2">
                     <button onclick="openParticipantModal()" class="bg-amber-500 hover:bg-amber-600 text-slate-950 px-4 py-2 rounded-xl text-xs sm:text-sm font-bold shadow-md flex items-center space-x-2 transition-all">
                         <i data-lucide="plus" class="w-4 h-4"></i>
-                        <span>Nuevo Participante</span>
+                        <span>Nuevo Alumno</span>
                     </button>
                     <button onclick="openImportModal()" class="bg-slate-800 hover:bg-slate-750 text-white px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold shadow-md flex items-center space-x-2 transition-all">
                         <i data-lucide="upload" class="w-4 h-4"></i>
@@ -169,7 +169,7 @@
                 <nav class="flex space-x-8">
                     <button onclick="switchAdminTab('participants')" id="tab-btn-participants" class="border-amber-500 text-amber-500 whitespace-nowrap py-4 px-1 border-b-2 font-bold text-sm flex items-center space-x-2">
                         <i data-lucide="users" class="w-4 h-4"></i>
-                        <span>Participantes</span>
+                        <span>Alumnos</span>
                     </button>
                     <button onclick="switchAdminTab('customizer')" id="tab-btn-customizer" class="border-transparent text-slate-400 hover:text-slate-200 whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm flex items-center space-x-2">
                         <i data-lucide="palette" class="w-4 h-4"></i>
@@ -229,11 +229,11 @@
                     <div class="space-y-4">
                         <!-- Campos de Texto Generales -->
                         <div>
-                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-1">Título de Certificación</label>
+                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-1">Título de Constancia</label>
                             <input type="text" id="config-title" oninput="updateConfigAndRedraw()" class="block w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-sm text-white">
                         </div>
                         <div>
-                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-1">Leyenda del Certificado</label>
+                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-1">Leyenda de la Constancia</label>
                             <textarea id="config-reason" oninput="updateConfigAndRedraw()" rows="3" class="block w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-sm text-white"></textarea>
                         </div>
                         
@@ -406,7 +406,7 @@
                         </div>
                         <div>
                             <h3 class="text-2xl font-extrabold text-white" id="stat-total-users">0</h3>
-                            <p class="text-xs font-semibold text-slate-400 uppercase tracking-wide">Total Participantes</p>
+                            <p class="text-xs font-semibold text-slate-400 uppercase tracking-wide">Total Alumnos</p>
                         </div>
                     </div>
                     <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-2xl flex items-center space-x-4">
@@ -446,8 +446,8 @@
     <footer class="bg-slate-950 text-slate-500 py-8 border-t border-slate-900 text-center">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-2">
             <p class="text-xs">&copy; 2026 CertiRiec. Todos los derechos reservados.</p>
-            <p class="text-[10px] text-slate-600">Sistema seguro de auditoría criptográfica y validación de diplomas a través de Códigos QR vectoriales.</p>
-            <p class="text-xs text-amber-500/60 font-semibold pt-2 border-t border-slate-900 mt-2">Realizado con excelencia por Giodev.</p>
+            <p class="text-[10px] text-slate-600">Sistema seguro de auditoría criptográfica y validación de certificados a través de Códigos QR vectoriales.</p>
+            <p class="text-xs text-amber-500/60 font-semibold pt-2 border-t border-slate-900 mt-2">Realizado por Giodev.</p>
         </div>
     </footer>
 
@@ -493,7 +493,7 @@
                 <i data-lucide="x" class="w-5 h-5"></i>
             </button>
             
-            <h3 class="text-xl font-bold text-white" id="participant-modal-title">Agregar Participante</h3>
+            <h3 class="text-xl font-bold text-white" id="participant-modal-title">Agregar Alumno</h3>
             
             <form onsubmit="handleSaveParticipant(event)" class="space-y-4">
                 <input type="hidden" id="participant-index">
@@ -502,7 +502,7 @@
                     <input type="text" id="participant-id" required class="block w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-sm text-white" placeholder="Ej: CERT-2026-001">
                 </div>
                 <div>
-                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-1">Nombre Completo del Participante</label>
+                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-1">Nombre Completo del Alumno</label>
                     <input type="text" id="participant-name" required class="block w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-sm text-white" placeholder="Ej: María José Ramírez">
                 </div>
                 <div>
@@ -569,10 +569,10 @@
             <div class="space-y-2">
                 <h3 class="text-xl font-bold text-white">ID de Certificado Inválido</h3>
                 <p class="text-xs text-slate-400 leading-relaxed">
-                    La identificación <span id="invalid-id-display" class="font-mono bg-slate-950 px-1.5 py-1 rounded text-red-400 border border-slate-800"></span> no existe en nuestros registros oficiales de auditoría.
+                    La identificación <span id="invalid-id-display" class="font-mono bg-slate-950 px-1.5 py-1 rounded text-red-400 border border-slate-800"></span> no existe en nuestros registros oficiales.
                 </p>
                 <p class="text-[11px] text-slate-500 leading-relaxed">
-                    Verifique si introdujo correctamente las mayúsculas, guiones y caracteres numéricos, o póngase en contacto con el soporte académico de la institución.
+                    Verifique si introdujo correctamente las mayúsculas, guiones y caracteres numéricos, o póngase en contacto con el soporte con su tutor acádemico.
                 </p>
             </div>
             <button onclick="closeNotFoundModal()" class="w-full bg-slate-800 hover:bg-slate-750 text-white font-bold py-2.5 rounded-xl text-sm transition-all">
