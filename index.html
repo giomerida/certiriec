@@ -236,20 +236,41 @@
                             <label class="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-1">Leyenda del Certificado</label>
                             <textarea id="config-reason" oninput="updateConfigAndRedraw()" rows="3" class="block w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-sm text-white"></textarea>
                         </div>
+                        
+                        <!-- Autoridad 1 -->
                         <div class="grid grid-cols-2 gap-4">
                             <div>
-                                <label class="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-1">Nombre Autoridad</label>
+                                <label class="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-1">Nombre Autoridad 1</label>
                                 <input type="text" id="config-author" oninput="updateConfigAndRedraw()" class="block w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-sm text-white">
                             </div>
                             <div>
-                                <label class="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-1">Cargo Autoridad</label>
+                                <label class="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-1">Cargo Autoridad 1</label>
                                 <input type="text" id="config-role" oninput="updateConfigAndRedraw()" class="block w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-sm text-white">
+                            </div>
+                        </div>
+
+                        <!-- Autoridad 2 -->
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-1">Nombre Autoridad 2</label>
+                                <input type="text" id="config-author2" oninput="updateConfigAndRedraw()" class="block w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-sm text-white">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-1">Cargo Autoridad 2</label>
+                                <input type="text" id="config-role2" oninput="updateConfigAndRedraw()" class="block w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-sm text-white">
                             </div>
                         </div>
 
                         <!-- Estilos del Certificado -->
                         <div class="bg-slate-950 p-4 rounded-xl border border-slate-800 space-y-4">
                             <span class="text-xs font-bold uppercase tracking-wider text-amber-500 block">Estilo & Plantilla</span>
+                            
+                            <!-- Subir Logotipo -->
+                            <div>
+                                <label class="block text-xs text-slate-400 mb-1">Logotipo del Certificado</label>
+                                <input type="file" id="custom-logo-input" accept="image/*" onchange="loadCustomLogo(event)" class="block w-full text-xs text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-xs file:font-semibold file:bg-slate-800 file:text-slate-300 hover:file:bg-slate-700">
+                            </div>
+
                             <div>
                                 <label class="block text-xs text-slate-400 mb-1">Elegir Plantilla de Fondo</label>
                                 <select id="config-theme" onchange="toggleCustomTemplateOption()" class="block w-full bg-slate-900 border border-slate-800 rounded-lg px-3 py-2 text-sm text-white">
@@ -264,13 +285,18 @@
                                 <label class="block text-xs text-slate-400 mb-1">Subir Imagen de Fondo (Se sugiere 1920x1358px)</label>
                                 <input type="file" id="custom-bg-input" accept="image/*" onchange="loadCustomBackground(event)" class="block w-full text-xs text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-xs file:font-semibold file:bg-slate-800 file:text-slate-300 hover:file:bg-slate-700">
                             </div>
-                            <!-- Subida de Firma Digital -->
+                            <!-- Subida de Firma Digital 1 -->
                             <div>
-                                <label class="block text-xs text-slate-400 mb-1">Firma Digital PNG (Transparente)</label>
+                                <label class="block text-xs text-slate-400 mb-1">Firma Digital 1 - Izquierda PNG (Transparente)</label>
                                 <input type="file" id="custom-signature-input" accept="image/*" onchange="loadCustomSignature(event)" class="block w-full text-xs text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-xs file:font-semibold file:bg-slate-800 file:text-slate-300 hover:file:bg-slate-700">
+                            </div>
+                            <!-- Subida de Firma Digital 2 -->
+                            <div>
+                                <label class="block text-xs text-slate-400 mb-1">Firma Digital 2 - Derecha PNG (Transparente)</label>
+                                <input type="file" id="custom-signature2-input" accept="image/*" onchange="loadCustomSignature2(event)" class="block w-full text-xs text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-xs file:font-semibold file:bg-slate-800 file:text-slate-300 hover:file:bg-slate-700">
                                 <div class="flex items-center space-x-2 mt-2">
                                     <input type="checkbox" id="show-signature-checkbox" checked onchange="updateConfigAndRedraw()" class="rounded bg-slate-900 border-slate-800 text-amber-500 focus:ring-0 focus:ring-offset-0">
-                                    <label for="show-signature-checkbox" class="text-xs text-slate-400">Mostrar firma digitalizada</label>
+                                    <label for="show-signature-checkbox" class="text-xs text-slate-400">Mostrar firmas digitalizadas</label>
                                 </div>
                             </div>
                             <div class="grid grid-cols-2 gap-4">
@@ -576,6 +602,8 @@
             reason: "Por haber aprobado satisfactoriamente todos los módulos teóricos y prácticos con un excelente desempeño académico en el programa formativo de:",
             author: "Dra. Alejandra Mendoza",
             role: "Directora Académica Global",
+            author2: "Ing. Carlos Mendoza",
+            role2: "Coordinador de Certificación",
             primaryColor: "#d97706", // Ámbar oscuro
             secondaryColor: "#0f172a", // Slate oscuro
             theme: "golden", // golden, modern, emerald, custom
@@ -593,8 +621,10 @@
             signatureY: 1080,
             
             // Recursos externos en Base64 cargados dinámicamente
+            customLogoImage: null,
             customBackgroundImage: null,
             customSignatureImage: null,
+            customSignatureImage2: null,
             showSignature: true
         };
 
@@ -841,7 +871,7 @@
             }
         }
 
-        // --- CARGAR RECURSOS MULTIMEDIA (FONDO Y FIRMAS) ---
+        // --- CARGAR RECURSOS MULTIMEDIA (FONDO, LOGO Y FIRMAS) ---
         function toggleCustomTemplateOption() {
             const selectTheme = document.getElementById('config-theme').value;
             const uploader = document.getElementById('custom-bg-uploader');
@@ -851,6 +881,23 @@
                 uploader.classList.add('hidden');
             }
             updateConfigAndRedraw();
+        }
+
+        function loadCustomLogo(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const img = new Image();
+                img.onload = function() {
+                    templateConfig.customLogoImage = img;
+                    updateConfigAndRedraw();
+                    showToast("Logotipo Cargado", "Logotipo personalizado procesado y listo para aplicar.");
+                };
+                img.src = e.target.result;
+            };
+            reader.readAsDataURL(file);
         }
 
         function loadCustomBackground(event) {
@@ -880,7 +927,24 @@
                 img.onload = function() {
                     templateConfig.customSignatureImage = img;
                     updateConfigAndRedraw();
-                    showToast("Firma Digital Cargada", "Se ha importado el archivo de firma transparente.", "info");
+                    showToast("Firma Digital 1 Cargada", "Se ha importado el archivo de firma transparente para la Autoridad 1.", "info");
+                };
+                img.src = e.target.result;
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function loadCustomSignature2(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const img = new Image();
+                img.onload = function() {
+                    templateConfig.customSignatureImage2 = img;
+                    updateConfigAndRedraw();
+                    showToast("Firma Digital 2 Cargada", "Se ha importado el archivo de firma transparente para la Autoridad 2.", "info");
                 };
                 img.src = e.target.result;
             };
@@ -917,12 +981,24 @@
                 drawGoldenThemeBorders(ctx, width, height);
             }
 
-            // Sub-encabezado institucional
-            ctx.fillStyle = templateConfig.secondaryColor;
-            ctx.font = '700 24px "Inter", sans-serif';
-            ctx.textAlign = 'center';
-            ctx.letterSpacing = '10px';
-            ctx.fillText("CERTIFICACIÓN EXCLUSIVA DE COMPETENCIAS ACADÉMICAS", width / 2, 220);
+            // Espacio de Logotipo (Parte Superior)
+            if (templateConfig.customLogoImage) {
+                const logoW = 240;
+                const logoH = 90;
+                ctx.drawImage(templateConfig.customLogoImage, width / 2 - logoW / 2, 140, logoW, logoH);
+            } else {
+                // Indicador visual elegante para subir un Logotipo (Línea de guiones fina)
+                ctx.strokeStyle = '#94A3B8';
+                ctx.lineWidth = 1;
+                ctx.setLineDash([5, 5]);
+                ctx.strokeRect(width / 2 - 150, 130, 300, 80);
+                ctx.setLineDash([]); // Restablecer guiones
+
+                ctx.fillStyle = '#94A3B8';
+                ctx.font = 'bold 15px "Inter", sans-serif';
+                ctx.textAlign = 'center';
+                ctx.fillText("[ LOGOTIPO INSTITUCIONAL ]", width / 2, 178);
+            }
 
             drawOrnateDivider(ctx, width / 2, 260, templateConfig.primaryColor);
 
@@ -930,6 +1006,7 @@
             ctx.fillStyle = templateConfig.primaryColor;
             ctx.font = `800 ${templateConfig.titleSize}px "Cinzel", Georgia, serif`;
             ctx.letterSpacing = '4px';
+            ctx.textAlign = 'center';
             ctx.fillText(templateConfig.title.toUpperCase(), width / 2, templateConfig.titleY);
 
             // Leyenda secundaria
@@ -970,49 +1047,58 @@
             ctx.font = `500 ${templateConfig.dateSize}px "Inter", sans-serif`;
             ctx.fillText(`Emitido y registrado de manera digital el día ${formattedDate}`, width / 2, templateConfig.dateY);
 
-            // Firma Electrónica (Autoridad Izquierda)
+            // Firma Electrónica (Autoridad Izquierda - Autoridad 1)
             ctx.strokeStyle = '#94A3B8';
             ctx.lineWidth = 2;
             ctx.beginPath();
-            ctx.moveTo(350, 1140);
-            ctx.lineTo(750, 1140);
+            ctx.moveTo(250, 1140);
+            ctx.lineTo(650, 1140);
             ctx.stroke();
 
-            // Dibujar imagen de firma cargada si existe
             if (templateConfig.showSignature && templateConfig.customSignatureImage) {
-                // Centrar firma en el eje X de la línea de la izquierda
-                const signatureX = 550 - 150;
+                const signatureX = 450 - 150;
                 ctx.drawImage(templateConfig.customSignatureImage, signatureX, templateConfig.signatureY - 80, 300, 120);
             }
 
             ctx.fillStyle = templateConfig.secondaryColor;
             ctx.font = '600 24px "Inter", sans-serif';
-            ctx.fillText(templateConfig.author, 550, 1180);
+            ctx.fillText(templateConfig.author, 450, 1180);
             ctx.fillStyle = '#64748B';
             ctx.font = '400 20px "Inter", sans-serif';
-            ctx.fillText(templateConfig.role, 550, 1210);
+            ctx.fillText(templateConfig.role, 450, 1210);
 
-            // Sello de seguridad central (O firma secundaria)
-            drawSecuritySeal(ctx, width / 2, 1130, templateConfig.primaryColor);
 
-            // Código QR del Alumno (Derecha)
+            // Firma Electrónica (Autoridad Derecha - Autoridad 2)
             ctx.strokeStyle = '#94A3B8';
             ctx.lineWidth = 2;
             ctx.beginPath();
-            ctx.moveTo(1170, 1140);
-            ctx.lineTo(1570, 1140);
+            ctx.moveTo(1270, 1140);
+            ctx.lineTo(1670, 1140);
             ctx.stroke();
 
-            // Generar código QR real
+            if (templateConfig.showSignature && templateConfig.customSignatureImage2) {
+                const signatureX2 = 1470 - 150;
+                ctx.drawImage(templateConfig.customSignatureImage2, signatureX2, templateConfig.signatureY - 80, 300, 120);
+            }
+
+            ctx.fillStyle = templateConfig.secondaryColor;
+            ctx.font = '600 24px "Inter", sans-serif';
+            ctx.fillText(templateConfig.author2, 1470, 1180);
+            ctx.fillStyle = '#64748B';
+            ctx.font = '400 20px "Inter", sans-serif';
+            ctx.fillText(templateConfig.role2, 1470, 1210);
+
+
+            // CÓDIGO QR CENTRAL DE AUDITORÍA (Sustituye al Sello Valid)
             const qrUrl = window.location.origin + window.location.pathname + "?id=" + encodeURIComponent(userData.id);
-            drawQRCodeOnCanvas(ctx, qrUrl, 1370, templateConfig.qrY, () => {
-                // Pie de página de datos de auditoría
+            drawQRCodeOnCanvas(ctx, qrUrl, width / 2, templateConfig.qrY, () => {
+                // Pie de página de datos de auditoría debajo del QR
                 ctx.fillStyle = templateConfig.secondaryColor;
                 ctx.font = 'bold 22px "Inter", sans-serif';
-                ctx.fillText(userData.id, 1370, 1185);
+                ctx.fillText(userData.id, width / 2, templateConfig.qrY + 35);
                 ctx.fillStyle = '#64748B';
                 ctx.font = '400 18px "Inter", sans-serif';
-                ctx.fillText("Código Único de Auditoría QR", 1370, 1215);
+                ctx.fillText("Código Único de Auditoría QR", width / 2, templateConfig.qrY + 65);
             });
         }
 
@@ -1074,6 +1160,7 @@
             context.fillText(line, x, currentY);
         }
 
+        // Divisor ornamental
         function drawOrnateDivider(ctx, cx, cy, color) {
             ctx.strokeStyle = color;
             ctx.lineWidth = 2;
@@ -1091,31 +1178,6 @@
             
             ctx.fillStyle = color;
             ctx.fill();
-        }
-
-        function drawSecuritySeal(ctx, cx, cy, color) {
-            ctx.strokeStyle = color;
-            ctx.lineWidth = 3;
-            ctx.beginPath();
-            ctx.arc(cx, cy, 75, 0, 2 * Math.PI);
-            ctx.stroke();
-
-            ctx.strokeStyle = color;
-            ctx.lineWidth = 1;
-            ctx.beginPath();
-            ctx.arc(cx, cy, 68, 0, 2 * Math.PI);
-            ctx.stroke();
-
-            ctx.fillStyle = color;
-            ctx.font = 'bold 20px "Inter", sans-serif';
-            ctx.textAlign = 'center';
-            ctx.fillText("VALIDATED", cx, cy - 10);
-            
-            ctx.font = 'bold 14px "Inter", sans-serif';
-            ctx.fillText("SECURE BLOCK", cx, cy + 15);
-
-            ctx.font = '10px "Inter", sans-serif';
-            ctx.fillText("★ ★ ★ ★ ★", cx, cy + 32);
         }
 
         // --- ESTILOS DE BORDES VECTORIALES (TEMAS) ---
@@ -1173,6 +1235,7 @@
             ctx.strokeRect(35, 35, w - 70, h - 70);
         }
 
+        // Esmeralda
         function drawEmeraldThemeBorders(ctx, w, h) {
             ctx.fillStyle = '#064E3B';
             ctx.fillRect(0, 0, w, 40);
@@ -1217,8 +1280,13 @@
         function initDefaultConfigInputs() {
             document.getElementById('config-title').value = templateConfig.title;
             document.getElementById('config-reason').value = templateConfig.reason;
+            
             document.getElementById('config-author').value = templateConfig.author;
             document.getElementById('config-role').value = templateConfig.role;
+            
+            document.getElementById('config-author2').value = templateConfig.author2;
+            document.getElementById('config-role2').value = templateConfig.role2;
+
             document.getElementById('config-primary-color').value = templateConfig.primaryColor;
             document.getElementById('config-secondary-color').value = templateConfig.secondaryColor;
             document.getElementById('config-theme').value = templateConfig.theme;
@@ -1230,8 +1298,13 @@
         function updateConfigAndRedraw() {
             templateConfig.title = document.getElementById('config-title').value;
             templateConfig.reason = document.getElementById('config-reason').value;
+            
             templateConfig.author = document.getElementById('config-author').value;
             templateConfig.role = document.getElementById('config-role').value;
+            
+            templateConfig.author2 = document.getElementById('config-author2').value;
+            templateConfig.role2 = document.getElementById('config-role2').value;
+
             templateConfig.primaryColor = document.getElementById('config-primary-color').value;
             templateConfig.secondaryColor = document.getElementById('config-secondary-color').value;
             templateConfig.theme = document.getElementById('config-theme').value;
@@ -1285,6 +1358,8 @@
                 reason: "Por haber aprobado satisfactoriamente todos los módulos teóricos y prácticos con un excelente desempeño académico en el programa formativo de:",
                 author: "Dra. Alejandra Mendoza",
                 role: "Directora Académica Global",
+                author2: "Ing. Carlos Mendoza",
+                role2: "Coordinador de Certificación",
                 primaryColor: "#d97706",
                 secondaryColor: "#0f172a",
                 theme: "golden",
@@ -1298,8 +1373,10 @@
                 dateSize: 24,
                 qrY: 1130,
                 signatureY: 1080,
+                customLogoImage: null,
                 customBackgroundImage: null,
                 customSignatureImage: null,
+                customSignatureImage2: null,
                 showSignature: true
             };
 
@@ -1398,7 +1475,7 @@
                 renderParticipantsTable();
                 updateStats();
                 confirmBox.remove();
-                showToast("Registro Eliminado", `Se removió a ${user.name} de la base de datos de auditoría.`, "info");
+                showToast("Registro Eliminar", `Se removió a ${user.name} de la base de datos de auditoría.`, "info");
             };
         }
 
