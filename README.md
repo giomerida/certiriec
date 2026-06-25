@@ -54,11 +54,11 @@
 
 ### 🖥️ Panel de Control
 
-![Panel de Control](img/CertiRiec_03.png)
+![Panel de Control](img/CertiRiec_04.png)
 
 ### 🎨 Personalizador de Diseño
 
-![Personalizador de Diseño](img/CertiRiec_04.png)
+![Personalizador de Diseño](img/CertiRiec_05.png)
 
 ### 🏆 Ejemplo de Constancia Generada
 
