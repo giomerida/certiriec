@@ -46,7 +46,23 @@
 
 ## 📸 Capturas de pantalla
 
-> _(Agrega aquí imágenes o GIFs del portal de validación, el panel de control y un ejemplo de constancia generada.)_
+## 📸 Capturas de pantalla
+
+### 🔎 Portal de Validación
+
+![Portal de Validación](img/CertiRiec_01.png)
+
+### 🖥️ Panel de Control
+
+![Panel de Control](img/CertiRiec_03.png)
+
+### 🎨 Personalizador de Diseño
+
+![Personalizador de Diseño](img/CertiRiec_04.png)
+
+### 🏆 Ejemplo de Constancia Generada
+
+![Constancia Generada](img/CertiRiec_02.png)
 
 ---
 
